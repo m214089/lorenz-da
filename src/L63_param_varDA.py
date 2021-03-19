@@ -60,12 +60,16 @@ varDA.localization.localize   = 1              # localization (0= None, 1= Gaspa
 varDA.localization.cov_cutoff = 0.0625         # normalized covariance cutoff = cutoff / ( 2*normalized_dist )
 varDA.localization.cov_trunc  = model.Ndof     # truncate localization matrix (cov_trunc <= model.Ndof)
 
+#varDA.inflation = inflation(1,1.0,Flase)
+
 if ( varDA.update == 2 ):
     varDA.fdvar                = type('',(),{}) # 4DVar class
     varDA.fdvar.window         = DA.ntimes      # length of the 4Dvar assimilation window
     varDA.fdvar.offset         = 0.5            # time offset: forecast from analysis to background time
     varDA.fdvar.nobstimes      = 5              # no. of evenly spaced obs. times in the window
 
+
+    
 diag_file            = type('',(),{})  # diagnostic file Class
 diag_file.filename   = model.Name + '_varDA_diag.nc4'
 diag_file.attributes = {'model'       : model.Name,
@@ -75,7 +79,7 @@ diag_file.attributes = {'model'       : model.Name,
                         'ntimes'      : DA.ntimes,
                         'dt'          : model.dt,
                         'Vupdate'     : varDA.update,
-                        'maxouter'    : varDA.maxiter,
+                        'maxouter'    : varDA.maxouter,
                         'precondition': varDA.precondition,
                         'Vlocalize'   : varDA.localization.localize,
                         'Vcov_cutoff' : varDA.localization.cov_cutoff,

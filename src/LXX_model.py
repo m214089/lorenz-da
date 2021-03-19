@@ -33,7 +33,7 @@ from   argparse      import ArgumentParser, ArgumentDefaultsHelpFormatter
 ###############################################################
 
 parser = ArgumentParser(description = 'Test TLM and Adjoint for LXX models', formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument('-m','--model',help='model name',type=str,required=False,choices=['L63','L96','L96_2scale'],default='L96')
+parser.add_argument('-m','--model',help='model name',type=str,required=False,choices=['L63','L96','L96_2scale'],default='L63')
 args = parser.parse_args()
 
 ###############################################################
@@ -53,8 +53,8 @@ elif ( args.model == 'L96_2scale' ):
     Par  = [8.0, 8.4, 40, 4, 10.0, 10.0, 1.0]  # model parameters [F, F+dF, m, n, b, c, h]
     Ndof = 40*(4+1)                            # model degrees of freedom
     dt   = 1.0e-4                              # model time-step
-    print 'L96_2scale is still under development'
-    print 'You may experience dizziness!'
+    print('L96_2scale is still under development')
+    print('You may experience dizziness!')
 model.init(Name=args.model,Ndof=Ndof,Par=Par,dt=dt)
 
 IC          = type('',(),{})
@@ -67,10 +67,10 @@ tf  = 4*0.05
 tol  = 1.0e-13
 pert = 1.0e-4
 
-print 'spinning-up ON the attractor ...'
-print '--------------------------------'
+print('spinning-up ON the attractor ...')
+print('--------------------------------')
 
-ts = np.rint(np.linspace(0,1000*tf/model.dt,1000*tf/model.dt+1)) * model.dt
+ts = np.rint(np.linspace(0,int(1000*tf/model.dt),int(1000*tf/model.dt+1))) * model.dt
 xs = model.advance(x0, ts, perfect=True)
 x0 = xs[-1,:].copy()
 
@@ -81,7 +81,7 @@ elif ( model.Name == 'L96' ):
 elif ( model.Name == 'L96_2scale' ):
     exec('plot_%s(ver=xs[-1,:],obs=xs[-1,:],N=%d)' % (model.Name, model.Ndof))
 
-ts = np.rint(np.linspace(0,tf/model.dt,tf/model.dt+1)) * model.dt
+ts = np.rint(np.linspace(0,int(tf/model.dt),int(tf/model.dt+1))) * model.dt
 
 xs = model.advance(x0, ts, perfect=True, rtol=tol, atol=tol)
 xsf = xs[-1,:].copy()
@@ -94,10 +94,10 @@ xspf = xsp[-1,:].copy()
 xp = model.advance_tlm(xp0, ts, xs, ts, adjoint=False, perfect=True, rtol=tol, atol=tol)
 xpf = xp[-1,:].copy()
 
-print 'check TLM ..'
+print('check TLM ..')
 for j in range(0,model.Ndof):
-    print 'j = %2d | Ratio = %14.13f' % (j+1, ( xspf[j] - xsf[j] ) / xpf[j])
-print '--------------------------------'
+    print('j = %2d | Ratio = %14.13f' % (j+1, ( xspf[j] - xsf[j] ) / xpf[j]))
+print('--------------------------------')
 
 xa0 = xpf.copy()
 xa = model.advance_tlm(xa0, ts, xs, ts, adjoint=True, perfect=True, rtol=tol, atol=tol)
@@ -106,8 +106,8 @@ xaf = xa[-1,:].copy()
 q1 = np.dot(np.transpose(xpf),xpf)
 q2 = np.dot(np.transpose(xaf),xp0)
 
-print 'check adjoint .. %14.13f' % (q2-q1)
-print '--------------------------------'
+print('check adjoint .. %14.13f' % (q2-q1))
+print('--------------------------------')
 
 pyplot.show()
 ###############################################################
