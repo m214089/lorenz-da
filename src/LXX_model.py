@@ -33,7 +33,7 @@ from   argparse      import ArgumentParser, ArgumentDefaultsHelpFormatter
 ###############################################################
 
 parser = ArgumentParser(description = 'Test TLM and Adjoint for LXX models', formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument('-m','--model',help='model name',type=str,required=False,choices=['L63','L96','L96_2scale'],default='L63')
+parser.add_argument('-m','--model',help='model name',type=str,required=False,choices=['R76','L63','L96','L96_2scale'],default='R76')
 args = parser.parse_args()
 
 ###############################################################
@@ -41,7 +41,11 @@ args = parser.parse_args()
 np.random.seed(0)
 
 model = Lorenz() # model Class
-if   ( args.model == 'L63' ):
+if   ( args.model == 'R76' ):
+    Par  = [0.2, 0.2, 5.7]                     # model parameters [a, b, c]
+    Ndof = 3                                   # model degrees of freedom
+    dt   = 1.0e-3                              # model time-step
+elif   ( args.model == 'L63' ):
     Par  = [10.0, 28.0, 8.0/3.0]               # model parameters [sigma, rho, beta]
     Ndof = 3                                   # model degrees of freedom
     dt   = 1.0e-3                              # model time-step
@@ -74,7 +78,7 @@ ts = np.rint(np.linspace(0,int(1000*tf/model.dt),int(1000*tf/model.dt+1))) * mod
 xs = model.advance(x0, ts, perfect=True)
 x0 = xs[-1,:].copy()
 
-if   ( model.Name == 'L63' ):
+if   ( model.Name == 'L63' or model.Name == 'R76' ):
     exec('plot_%s(att=xs)'                         % (model.Name            ))
 elif ( model.Name == 'L96' ):
     exec('plot_%s(ver=xs[-1,:],obs=xs[-1,:],N=%d)' % (model.Name, model.Ndof))

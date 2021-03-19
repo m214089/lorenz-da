@@ -36,7 +36,7 @@ from   plot_stats    import plot_cov
 def main():
 
     parser = ArgumentParser(description = 'Compute climatological covariances for LXX models', formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-m','--model',help='model name',type=str,choices=['L63','L96'],default='L96',required=False)
+    parser.add_argument('-m','--model',help='model name',type=str,choices=['R76','L63','L96'],default='L96',required=False)
     parser.add_argument('-c','--covariances',help='covariance method',type=str,choices=['NMC','Climo','EnKF'],default='EnKF',required=False)
     parser.add_argument('-f','--filename',help='filename for EnKF method',type=str,required=True)
     args = parser.parse_args()
@@ -46,7 +46,12 @@ def main():
     if ( (method == 'NMC') or (method == 'Climo') ):
 
         model = Lorenz()
-        if   ( args.model == 'L63' ):
+        if   ( args.model == 'R76' ):
+            Ndof = 3                          # model degrees of freedom
+            Par  = [0.2, 0.5, 5.7]            # model parameters [sigma, rho, beta]
+            dt   = 1.0e-4                     # model time-step
+            tf   =  0.025                      # time for forecast (6 hours)
+        elif   ( args.model == 'L63' ):
             Ndof = 3                          # model degrees of freedom
             Par  = [10.0, 28.0, 8.0/3.0]      # model parameters [sigma, rho, beta]
             dt   = 1.0e-4                     # model time-step
@@ -67,7 +72,7 @@ def main():
         IC.filename = ''
         [x0,_] = get_IC(model,IC)
 
-        pscale = 1.0 # that is one of the problem cases ...
+        pscale = 0.0 # that is one of the problem cases ...
         
         if ( method == 'NMC' ):
 
@@ -146,6 +151,10 @@ def main():
     Dim      = nc.createDimension('ndof',model.Ndof)
     Var      = nc.createVariable('B', 'f8', ('ndof','ndof',))
     nc.model = model.Name
+    if   ( model.Name == 'R76' ):
+        nc.sigma = model.Par[0]
+        nc.rho   = model.Par[1]
+        nc.beta  = model.Par[2]
     if   ( model.Name == 'L63' ):
         nc.sigma = model.Par[0]
         nc.rho   = model.Par[1]

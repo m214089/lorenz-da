@@ -81,7 +81,10 @@ class Lorenz(object):
 
         self.Name = Name
         self.dt   = dt
-        if   ( self.Name == 'L63' ):
+        if   ( self.Name == 'R76' ):
+            self.Par = [0.2, 0.2, 5.7]   if ( Par  is None ) else Par
+            self.Ndof = 3                if ( Ndof is None ) else Ndof
+        elif ( self.Name == 'L63' ):
             self.Par = [10., 28., 8./3.] if ( Par  is None ) else Par
             self.Ndof = 3                if ( Ndof is None ) else Ndof
         elif ( self.Name == 'L96' ):
@@ -115,7 +118,9 @@ class Lorenz(object):
            xs - final state at time t = T
         '''
 
-        if   ( self.Name == 'L63' ):
+        if   ( self.Name == 'R76' ):
+            par = None
+        elif ( self.Name == 'L63' ):
             par = None
         elif ( self.Name == 'L96' ):
             if ( perfect ): par = self.Par[0]
@@ -157,7 +162,9 @@ class Lorenz(object):
            xs - final state at time t = T
         '''
 
-        if   ( self.Name == 'L63' ):
+        if   ( self.Name == 'R76' ):
+            par = None
+        elif ( self.Name == 'L63' ):
             par = None
         elif ( self.Name == 'L96' ):
             if ( perfect ): par = self.Par[0]
@@ -179,6 +186,70 @@ class Lorenz(object):
             result.put(xs)
     # }}}
 
+    def R76(self, x0, t, par, dummy):
+    # {{{
+        '''
+        76 - function that integrates the Lorenz 1963 equations, given parameters 'par' and initial
+        conditions 'x0'
+
+        xs = R76(x0, t, (par, dummy))
+
+         self - model class for the model containing model static parameters
+           x0 - initial state at time t = 0
+            t - vector of time from t = [0, T]
+          par - parameters of the Lorenz 1963 system
+        dummy - Arguments coming in after x0, t MUST be a tuple (,) for scipy.integrate.odeint to work
+           xs - final state at time t = T
+        '''
+
+        x, y, z = x0
+        a, b, c = self.Par
+
+        x_dot = -y-z
+        y_dot = x+a*y
+        z_dot = b+z*(x -c)
+
+        xs = numpy.array([x_dot, y_dot, z_dot])
+
+        return xs
+    # }}}
+
+    def R76_tlm(self, x0, t, par, xsave, tsave, adjoint):
+    # {{{
+        '''
+        L63_tlm - function that integrates the Lorenz 1963 equations forward or backward using a TLM and
+        its adjoint, given parameters 'par' and initial perturbations 'x0'
+
+        xs = L63_tlm(x0, t, (par, xsave, tsave, adjoint))
+
+       self - model class for the model containing model static parameters
+         x0 - initial perturbations at time t = 0
+          t - vector of time from t = [0, T]
+        par - parameters of the Lorenz 1963 system
+      xsave - states along the control trajectory for the TLM / Adjoint
+      tsave - time vector along the control trajectory for the TLM / Adjoint
+    adjoint - Forward TLM (False) or Adjoint (True)
+         xs - evolved perturbations at time t = T
+        '''
+
+        a, b, c = self.Par
+
+        x = numpy.interp(t,tsave,xsave[:,0])
+        y = numpy.interp(t,tsave,xsave[:,1])
+        z = numpy.interp(t,tsave,xsave[:,2])
+
+        M = numpy.array([[0.0,  -1.0,  -1.0],
+                         [1.0,    a,    0.0],
+                         [ z,    0.0,   x-c]])
+
+        if ( adjoint ):
+            xs = numpy.dot(numpy.transpose(M),x0)
+        else:
+            xs = numpy.dot(M,x0)
+
+        return xs
+    # }}}
+    
     def L63(self, x0, t, par, dummy):
     # {{{
         '''
@@ -482,6 +553,63 @@ class Lorenz(object):
 
 # }}}
 ###############################################################
+
+###############################################################
+def plot_R76(obs=None, ver=None, xb=None, xa=None, xdim=0, ydim=2, **kwargs):
+# {{{
+    '''
+    Plot the Lorenz 1963 attractor in 2D
+
+    plot_L63(obs=None, ver=None, xb=None, xa=None, xdim=0, ydim=2, **kwargs)
+
+        obs - x,y,z from t = [0, T]
+        ver - x,y,z from t = [0, T]
+         xb - prior x,y,z from t = [0, T]
+         xa - posterior x,y,z from t = [0, T]
+       xdim - variable along x-axis (X)
+       ydim - variable along y-axis (Z)
+    '''
+
+    if ( xdim == ydim ):
+        xdim = 0
+        ydim = 2
+
+    if ( xdim < 0  or xdim > 2 ) : xdim = 0
+    if ( ydim < 0  or ydim > 2 ) : ydim = 2
+
+    if   ( xdim == 0 ): xlab = 'X'
+    elif ( xdim == 1 ): xlab = 'Y'
+    elif ( xdim == 2 ): xlab = 'Z'
+
+    if   ( ydim == 0 ): ylab = 'X'
+    elif ( ydim == 1 ): ylab = 'Y'
+    elif ( ydim == 2 ): ylab = 'Z'
+
+    fig = pyplot.figure()
+    pyplot.clf()
+
+    att = None
+    pretitle = None
+    for key in kwargs:
+        if ( key == 'att' ): att = kwargs[key]
+        if ( key == 'pretitle' ): pretitle = kwargs[key]
+
+    if ( att is not None ): pyplot.plot(att[:,xdim], att[:,ydim], color='gray', linewidth=1)
+    if ( xb  is not None ): pyplot.plot(xb[ :,xdim], xb[ :,ydim], 'b-', linewidth=1)
+    if ( xa  is not None ): pyplot.plot(xa[ :,xdim], xa[ :,ydim], 'r-', linewidth=1)
+    if ( ver is not None ): pyplot.plot(ver[:,xdim], ver[:,ydim], 'k-', linewidth=1)
+    if ( obs is not None ): pyplot.plot(obs[:,xdim], obs[:,ydim], 'yo', markeredgecolor='y')
+
+    pyplot.xlabel(xlab,fontweight='bold',fontsize=12)
+    pyplot.ylabel(ylab,fontweight='bold',fontsize=12)
+    title_str = 'Lorenz attractor'
+    pyplot.title(title_str,fontweight='bold',fontsize=14)
+    fig.canvas.set_window_title(title_str)
+
+    return fig
+# }}}
+###############################################################
+
 
 ###############################################################
 def plot_L63(obs=None, ver=None, xb=None, xa=None, xdim=0, ydim=2, **kwargs):
@@ -788,7 +916,20 @@ def get_IC(model, restart, Nens=None):
 
     print(('Generating ICs for %s' % model.Name))
 
-    if (   model.Name == 'L63' ):
+    if (   model.Name == 'R76' ):
+
+        if ( restart.time is None ):
+            print('... from Miller et al., 1994')
+
+            xt = numpy.array([3.0, 1.0, 0.0])
+
+            xa = perturb_truth(xt, model, Nens=Nens)
+
+        else:
+
+            [xt, xa] = read_from_restart(restart, Nens=Nens)
+
+    elif (   model.Name == 'L63' ):
 
         if ( restart.time is None ):
             print('... from Miller et al., 1994')
