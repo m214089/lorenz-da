@@ -90,9 +90,7 @@ def main():
     # Loop through the states
     for t in range(sOI, eOI):
 
-        print(Xb.shape,Xb)
-        
-        fig = plot_R76(obs=y[t,], ver=xt[t,], xb=Xb[t,], xa=Xa[t,], t=t, N=model.Ndof, pretitle=fstr, figNum=1)
+        fig = plot_R76(obs=y[t:t,], ver=xt[t:t,], xb=Xb[t:t,], xa=Xa[t:t,], t=t, N=model.Ndof, pretitle=fstr, figNum=1)
 
         fname = fname_fig + '_%05d.png' % (t)
         if ( save_fig ):

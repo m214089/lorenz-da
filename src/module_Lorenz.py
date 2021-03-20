@@ -558,9 +558,9 @@ class Lorenz(object):
 def plot_R76(obs=None, ver=None, xb=None, xa=None, xdim=0, ydim=2, **kwargs):
 # {{{
     '''
-    Plot the Lorenz 1963 attractor in 2D
+    Plot the Rössler 1976 attractor in 2D
 
-    plot_L63(obs=None, ver=None, xb=None, xa=None, xdim=0, ydim=2, **kwargs)
+    plot_R76(obs=None, ver=None, xb=None, xa=None, xdim=0, ydim=2, **kwargs)
 
         obs - x,y,z from t = [0, T]
         ver - x,y,z from t = [0, T]
@@ -588,20 +588,17 @@ def plot_R76(obs=None, ver=None, xb=None, xa=None, xdim=0, ydim=2, **kwargs):
     fig = pyplot.figure()
     pyplot.clf()
 
-    print(xb)
-    print(xb[xdim],xb[ydim])
-    
     att = None
     pretitle = None
     for key in kwargs:
         if ( key == 'att' ): att = kwargs[key]
         if ( key == 'pretitle' ): pretitle = kwargs[key]
 
-    if ( att is not None ): pyplot.plot(att[xdim], att[ydim], color='gray', linewidth=1)
-    if ( xb  is not None ): pyplot.plot(xb[ xdim], xb[ ydim], 'b-', linewidth=1)
-    if ( xa  is not None ): pyplot.plot(xa[ xdim], xa[ ydim], 'r-', linewidth=1)
-    if ( ver is not None ): pyplot.plot(ver[xdim], ver[ydim], 'k-', linewidth=1)
-    if ( obs is not None ): pyplot.plot(obs[xdim], obs[ydim], 'yo', markeredgecolor='y')
+    if ( att is not None ): pyplot.plot(att[:,xdim], att[:,ydim], color='gray', linewidth=1)
+    if ( xb  is not None ): pyplot.plot(xb[ :,xdim], xb[ :,ydim], 'b-', linewidth=1)
+    if ( xa  is not None ): pyplot.plot(xa[ :,xdim], xa[ :,ydim], 'r-', linewidth=1)
+    if ( ver is not None ): pyplot.plot(ver[:,xdim], ver[:,ydim], 'k-', linewidth=1)
+    if ( obs is not None ): pyplot.plot(obs[:,xdim], obs[:,ydim], 'yo', markeredgecolor='y')
 
     pyplot.xlabel(xlab,fontweight='bold',fontsize=12)
     pyplot.ylabel(ylab,fontweight='bold',fontsize=12)
