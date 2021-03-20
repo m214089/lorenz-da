@@ -203,86 +203,88 @@ def read_diag_info(fname):
         print('Error: File does not exist')
         sys.exit(2)
 
-    try:
+#    try:
 
-        nc = Dataset(fname, mode='r', format='NETCDF4')
+    nc = Dataset(fname, mode='r', format='NETCDF4')
 
-        Name = nc.model
-        Ndof = len(nc.dimensions['ndof'])
-        dt   = nc.dt
-        if   ( Name == 'L63' ):
-            Par = [nc.sigma, nc.rho, nc.beta]
-        elif ( Name == 'L96' ):
-            Par = [nc.F, nc.F+nc.dF]
-        else:
-            print('model %s is not implemented' % (Name))
-            sys.exit(2)
+    Name = nc.model
+    Ndof = len(nc.dimensions['ndof'])
+    dt   = nc.dt
+    if   ( Name == 'R76' ):
+        Par = [nc.sigma, nc.rho, nc.beta]
+    elif   ( Name == 'L63' ):
+        Par = [nc.sigma, nc.rho, nc.beta]
+    elif ( Name == 'L96' ):
+        Par = [nc.F, nc.F+nc.dF]
+    else:
+        print('model %s is not implemented' % (Name))
+        sys.exit(2)
 
-        if ( Name in ['L63', 'L96'] ):
-            model = Lorenz()
-            model.init(Name=Name,Ndof=Ndof,Par=Par,dt=dt)
+    if ( Name in ['R76', 'L63', 'L96'] ):
+        model = Lorenz()
+        model.init(Name=Name,Ndof=Ndof,Par=Par,dt=dt)
 
-        nassim   = len(nc.dimensions['ntime'])
-        ntimes   = nc.ntimes
-        Nobs     = len(nc.dimensions['nobs'  ]) if ( 'nobs'   in nc.dimensions ) else model.Ndof
-        maxouter = len(nc.dimensions['nouter']) if ( 'nouter' in nc.dimensions ) else 1
+    nassim   = len(nc.dimensions['ntime'])
+    ntimes   = nc.ntimes
+    Nobs     = len(nc.dimensions['nobs'  ]) if ( 'nobs'   in nc.dimensions ) else model.Ndof
+    maxouter = len(nc.dimensions['nouter']) if ( 'nouter' in nc.dimensions ) else 1
 
-        DA = DataAssim()
-        DA.init(nassim=nassim,ntimes=ntimes,maxouter=maxouter,Nobs=Nobs)
+    DA = DataAssim()
+    DA.init(nassim=nassim,ntimes=ntimes,maxouter=maxouter,Nobs=Nobs)
 
-        if 'do_hybrid' in nc.ncattrs():
-            setattr(DA,'do_hybrid',  nc.do_hybrid)
-            setattr(DA,'hybrid_wght',nc.hybrid_wght)
-            setattr(DA,'hybrid_rcnt',nc.hybrid_rcnt)
-        else:
-            setattr(DA,'do_hybrid',  False)
+    if 'do_hybrid' in nc.ncattrs():
+        setattr(DA,'do_hybrid',  nc.do_hybrid)
+        setattr(DA,'hybrid_wght',nc.hybrid_wght)
+        setattr(DA,'hybrid_rcnt',nc.hybrid_rcnt)
+    else:
+        setattr(DA,'do_hybrid',  False)
+        
+    ensDA = EnsDataAssim()
+    if 'Eupdate' in nc.ncattrs():
+        update     = nc.Eupdate
+        Nens       = len(nc.dimensions['ncopy'])
+        inflate    = nc.Einflate
+        infl_fac   = nc.Einfl_fac
+        localize   = nc.Elocalize
+        cov_cutoff = nc.Ecov_cutoff
+        cov_trunc  = nc.Ecov_trunc
+        ensDA.init(model,DA,\
+                   update=update,Nens=Nens,\
+                   inflate=inflate,infl_fac=infl_fac,\
+                   localize=localize,cov_cutoff=cov_cutoff,cov_trunc=cov_trunc)
 
-        ensDA = EnsDataAssim()
-        if 'Eupdate' in nc.ncattrs():
-            update     = nc.Eupdate
-            Nens       = len(nc.dimensions['ncopy'])
-            inflate    = nc.Einflate
-            infl_fac   = nc.Einfl_fac
-            localize   = nc.Elocalize
-            cov_cutoff = nc.Ecov_cutoff
-            cov_trunc  = nc.Ecov_trunc
-            ensDA.init(model,DA,\
-                       update=update,Nens=Nens,\
-                       inflate=inflate,infl_fac=infl_fac,\
-                       localize=localize,cov_cutoff=cov_cutoff,cov_trunc=cov_trunc)
+    varDA = VarDataAssim()
+    if 'Vupdate' in nc.ncattrs():
+        update       = nc.Vupdate
+        precondition = nc.precondition
+        maxiter      = nc.maxiter
+        tol          = nc.tol
+        inflate      = nc.Vinflate
+        infl_fac     = nc.Vinfl_fac
+        infl_adp     = nc.Vinfl_adp
+        localize     = nc.Vlocalize
+        cov_cutoff   = nc.Vcov_cutoff
+        cov_trunc    = nc.Vcov_trunc
+        window       = nc.window
+        offset       = nc.offset
+        nobstimes    = nc.nobstimes
+        varDA.init(model,DA,\
+                   update=update,precondition=precondition,\
+                   maxiter=maxiter,tol=tol,\
+                   inflate=inflate,infl_fac=infl_fac,infl_adp=infl_adp,\
+                   localize=localize,cov_cutoff=cov_cutoff,cov_trunc=cov_trunc,\
+                   window=window,offset=offset,nobstimes=nobstimes)
 
-        varDA = VarDataAssim()
-        if 'Vupdate' in nc.ncattrs():
-            update       = nc.Vupdate
-            precondition = nc.precondition
-            maxiter      = nc.maxiter
-            tol          = nc.tol
-            inflate      = nc.Vinflate
-            infl_fac     = nc.Vinfl_fac
-            infl_adp     = nc.Vinfl_adp
-            localize     = nc.Vlocalize
-            cov_cutoff   = nc.Vcov_cutoff
-            cov_trunc    = nc.Vcov_trunc
-            window       = nc.window
-            offset       = nc.offset
-            nobstimes    = nc.nobstimes
-            varDA.init(model,DA,\
-                       update=update,precondition=precondition,\
-                       maxiter=maxiter,tol=tol,\
-                       inflate=inflate,infl_fac=infl_fac,infl_adp=infl_adp,\
-                       localize=localize,cov_cutoff=cov_cutoff,cov_trunc=cov_trunc,\
-                       window=window,offset=offset,nobstimes=nobstimes)
+    nc.close()
 
-        nc.close()
+#    except Exception as Instance:
 
-    except Exception as Instance:
-
-        print('Exception occured in %s of %s' % (source, module))
-        print('Exception occured during reading of %s' % (fname))
-        print(type(Instance))
-        print(Instance.args)
-        print(Instance)
-        sys.exit(1)
+#        print('Exception occured in %s of %s' % (source, module))
+#        print('Exception occured during reading of %s' % (fname))
+#        print(type(Instance))
+#        print(Instance.args)
+#        print(Instance)
+#        sys.exit(1)
 
     return [model, DA, ensDA, varDA]
 
@@ -320,37 +322,37 @@ def read_diag(fname, time, end_time=None):
 
     [model, DA, ensDA, varDA] = read_diag_info(fname)
 
-    try:
+#    try:
 
-        nc = Dataset(fname, mode='r', format='NETCDF4')
+    nc = Dataset(fname, mode='r', format='NETCDF4')
 
-        truth        = np.squeeze(nc.variables[ 'truth'       ][time:end_time,])
-        prior        = np.squeeze(nc.variables[ 'prior'       ][time:end_time,])
-        posterior    = np.squeeze(nc.variables[ 'posterior'   ][time:end_time,])
-        obs          = np.squeeze(nc.variables[ 'obs'         ][time:end_time,])
-        obs_operator = np.squeeze(nc.variables[ 'obs_operator'][time:end_time,])
-        obs_err_var  = np.squeeze(nc.variables['obs_err_var' ][time:end_time,])
+    truth        = np.squeeze(nc.variables[ 'truth'       ][time:end_time,])
+    prior        = np.squeeze(nc.variables[ 'prior'       ][time:end_time,])
+    posterior    = np.squeeze(nc.variables[ 'posterior'   ][time:end_time,])
+    obs          = np.squeeze(nc.variables[ 'obs'         ][time:end_time,])
+    obs_operator = np.squeeze(nc.variables[ 'obs_operator'][time:end_time,])
+    obs_err_var  = np.squeeze(nc.variables[ 'obs_err_var' ][time:end_time,])
 
-        if ( DA.do_hybrid ):
-            central_prior     = np.squeeze(nc.variables['central_prior'    ][time:end_time,])
-            central_posterior = np.squeeze(nc.variables['central_posterior'][time:end_time,])
+    if ( DA.do_hybrid ):
+        central_prior     = np.squeeze(nc.variables['central_prior'    ][time:end_time,])
+        central_posterior = np.squeeze(nc.variables['central_posterior'][time:end_time,])
 
-        if 'niters' in list(nc.variables.keys()):
-            niters = nc.variables['niters'][time:end_time]
+    if 'niters' in list(nc.variables.keys()):
+        niters = nc.variables['niters'][time:end_time]
 
-        if 'evratio' in list(nc.variables.keys()):
-            evratio = nc.variables['evratio'][time:end_time]
+    if 'evratio' in list(nc.variables.keys()):
+        evratio = nc.variables['evratio'][time:end_time]
 
-        nc.close()
+    nc.close()
 
-    except Exception as Instance:
+#    except Exception as Instance:
 
-        print('Exception occured in %s of %s' % (source, module))
-        print('Exception occured during reading of %s' % (fname))
-        print(type(Instance))
-        print(Instance.args)
-        print(Instance)
-        sys.exit(1)
+#        print('Exception occured in %s of %s' % (source, module))
+#        print('Exception occured during reading of %s' % (fname))
+#        print(type(Instance))
+#        print(Instance.args)
+#        print(Instance)
+#        sys.exit(1)
 
     if ( DA.do_hybrid ):
         return truth, prior, posterior, obs, obs_operator, obs_err_var, central_prior, central_posterior, niters, evratio

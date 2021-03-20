@@ -24,7 +24,7 @@ __status__    = "Prototype"
 import os, sys, numpy
 from   argparse      import ArgumentParser, ArgumentDefaultsHelpFormatter
 from   matplotlib    import pyplot
-from   module_Lorenz import plot_L96
+from   module_Lorenz import plot_R76
 from   module_IO     import read_diag_info, read_diag
 ###############################################################
 
@@ -90,7 +90,9 @@ def main():
     # Loop through the states
     for t in range(sOI, eOI):
 
-        fig = plot_L96(obs=y[t,], ver=xt[t,], xb=Xb[t,], xa=Xa[t,], t=t, N=model.Ndof, pretitle=fstr, figNum=1)
+        print(Xb.shape,Xb)
+        
+        fig = plot_R76(obs=y[t,], ver=xt[t,], xb=Xb[t,], xa=Xa[t,], t=t, N=model.Ndof, pretitle=fstr, figNum=1)
 
         fname = fname_fig + '_%05d.png' % (t)
         if ( save_fig ):

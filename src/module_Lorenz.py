@@ -569,7 +569,7 @@ def plot_R76(obs=None, ver=None, xb=None, xa=None, xdim=0, ydim=2, **kwargs):
        xdim - variable along x-axis (X)
        ydim - variable along y-axis (Z)
     '''
-
+    
     if ( xdim == ydim ):
         xdim = 0
         ydim = 2
@@ -588,21 +588,24 @@ def plot_R76(obs=None, ver=None, xb=None, xa=None, xdim=0, ydim=2, **kwargs):
     fig = pyplot.figure()
     pyplot.clf()
 
+    print(xb)
+    print(xb[xdim],xb[ydim])
+    
     att = None
     pretitle = None
     for key in kwargs:
         if ( key == 'att' ): att = kwargs[key]
         if ( key == 'pretitle' ): pretitle = kwargs[key]
 
-    if ( att is not None ): pyplot.plot(att[:,xdim], att[:,ydim], color='gray', linewidth=1)
-    if ( xb  is not None ): pyplot.plot(xb[ :,xdim], xb[ :,ydim], 'b-', linewidth=1)
-    if ( xa  is not None ): pyplot.plot(xa[ :,xdim], xa[ :,ydim], 'r-', linewidth=1)
-    if ( ver is not None ): pyplot.plot(ver[:,xdim], ver[:,ydim], 'k-', linewidth=1)
-    if ( obs is not None ): pyplot.plot(obs[:,xdim], obs[:,ydim], 'yo', markeredgecolor='y')
+    if ( att is not None ): pyplot.plot(att[xdim], att[ydim], color='gray', linewidth=1)
+    if ( xb  is not None ): pyplot.plot(xb[ xdim], xb[ ydim], 'b-', linewidth=1)
+    if ( xa  is not None ): pyplot.plot(xa[ xdim], xa[ ydim], 'r-', linewidth=1)
+    if ( ver is not None ): pyplot.plot(ver[xdim], ver[ydim], 'k-', linewidth=1)
+    if ( obs is not None ): pyplot.plot(obs[xdim], obs[ydim], 'yo', markeredgecolor='y')
 
     pyplot.xlabel(xlab,fontweight='bold',fontsize=12)
     pyplot.ylabel(ylab,fontweight='bold',fontsize=12)
-    title_str = 'Lorenz attractor'
+    title_str = 'Rössler attractor'
     pyplot.title(title_str,fontweight='bold',fontsize=14)
     fig.canvas.set_window_title(title_str)
 

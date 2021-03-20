@@ -95,11 +95,17 @@ attributes = {'model'       : model.Name,
               'Vupdate'     : varDA.update,
               'maxouter'    : varDA.maxouter,
               'precondition': varDA.precondition,
+              'Vinflate'    : int(varDA.inflation.inflate),
+              'Vinfl_fac'   : varDA.inflation.infl_fac,
+              'Vinfl_adp'   : int(varDA.inflation.infl_adp),
               'Vlocalize'   : varDA.localization.localize,
               'Vcov_cutoff' : varDA.localization.cov_cutoff,
               'Vcov_trunc'  : varDA.localization.cov_trunc,
               'maxiter'     : varDA.minimization.maxiter,
-              'tol'         : varDA.minimization.tol}
+              'tol'         : varDA.minimization.tol,
+              'offset'      : varDA.fdvar.offset,
+              'window'      : varDA.fdvar.window,
+              'nobstimes'   : varDA.fdvar.nobstimes}              
 diag_file = Container(filename=filename,attributes=attributes)
         
 if ( varDA.update == 2 ):

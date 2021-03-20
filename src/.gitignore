@@ -2,4 +2,5 @@
 *#
 *.bak
 *.nc4
+*.png
 __pycache__
