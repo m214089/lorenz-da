@@ -585,19 +585,28 @@ def plot_R76(obs=None, ver=None, xb=None, xa=None, xdim=0, ydim=2, **kwargs):
     elif ( ydim == 1 ): ylab = 'Y'
     elif ( ydim == 2 ): ylab = 'Z'
 
-    fig = pyplot.figure()
-    pyplot.clf()
-
     att = None
     pretitle = None
     for key in kwargs:
         if ( key == 'att' ): att = kwargs[key]
         if ( key == 'pretitle' ): pretitle = kwargs[key]
 
+    fig = pyplot.figure()
+    pyplot.clf()
+
+#    print('att',att[:,xdim], att[:,ydim])    
+#    print('xb',  xb[:,xdim],  xb[:,ydim])
+#    print('xa',  xa[:,xdim],  xa[:,ydim])
+#    print('ver', ver[:,xdim], ver[:,ydim])
+#    print('obs', obs[:,xdim], obs[:,ydim])    
+
+    pyplot.xlim([-10,10])
+    pyplot.ylim([-10,10])    
+
     if ( att is not None ): pyplot.plot(att[:,xdim], att[:,ydim], color='gray', linewidth=1)
-    if ( xb  is not None ): pyplot.plot(xb[ :,xdim], xb[ :,ydim], 'b-', linewidth=1)
-    if ( xa  is not None ): pyplot.plot(xa[ :,xdim], xa[ :,ydim], 'r-', linewidth=1)
-    if ( ver is not None ): pyplot.plot(ver[:,xdim], ver[:,ydim], 'k-', linewidth=1)
+    if ( xb  is not None ): pyplot.plot(xb[ :,xdim], xb[ :,ydim], 'bo', linewidth=1)
+    if ( xa  is not None ): pyplot.plot(xa[ :,xdim], xa[ :,ydim], 'ro', linewidth=1)
+    if ( ver is not None ): pyplot.plot(ver[:,xdim], ver[:,ydim], 'ko', linewidth=1)
     if ( obs is not None ): pyplot.plot(obs[:,xdim], obs[:,ydim], 'yo', markeredgecolor='y')
 
     pyplot.xlabel(xlab,fontweight='bold',fontsize=12)

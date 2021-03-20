@@ -181,7 +181,7 @@ def main():
     pyplot.legend(loc=1)
     pyplot.hold(False)
     if save_figures:
-        fig.savefig('%s_varDA_RMSE_Prior.eps' % (model.Name),dpi=300,orientation=fOrient,format='eps')
+        fig.savefig('%s_varDA_RMSE_Prior.pdf' % (model.Name),orientation=fOrient,format='pdf')
     #-----------------------------------------------------------
 
     #-----------------------------------------------------------
@@ -215,7 +215,7 @@ def main():
     pyplot.legend(loc=1)
     pyplot.hold(False)
     if save_figures:
-        fig.savefig('%s_varDA_RMSE_Posterior.eps' % (model.Name),dpi=300,orientation=fOrient,format='eps')
+        fig.savefig('%s_varDA_RMSE_Posterior.pdf' % (model.Name),orientation=fOrient,format='pdf')
     #-----------------------------------------------------------
 
     #-----------------------------------------------------------
@@ -237,7 +237,7 @@ def main():
     pyplot.title( 'RMSE',             fontweight='bold',fontsize=14)
     pyplot.hold(False)
     if save_figures:
-        fig.savefig('%s_varDA_RMSE.eps' % (model.Name),dpi=300,orientation=fOrient,format='eps')
+        fig.savefig('%s_varDA_RMSE.pdf' % (model.Name),orientation=fOrient,format='pdf')
     #-----------------------------------------------------------
 
     #-----------------------------------------------------------
@@ -257,7 +257,7 @@ def main():
     pyplot.title( 'No. of Iterations', fontweight='bold',fontsize=14)
     pyplot.hold(False)
     if save_figures:
-        fig.savefig('%s_varDA_niters.eps' % (model.Name),dpi=300,orientation=fOrient,format='eps')
+        fig.savefig('%s_varDA_niters.pdf' % (model.Name),orientation=fOrient,format='pdf')
     #-----------------------------------------------------------
 
     #-----------------------------------------------------------
@@ -276,7 +276,7 @@ def main():
     pyplot.title( 'Error - Variance Ratio', fontweight='bold',fontsize=14)
     pyplot.hold(False)
     if save_figures:
-        fig.savefig('%s_varDA_evratio.eps' % (model.Name),dpi=300,orientation=fOrient,format='eps')
+        fig.savefig('%s_varDA_evratio.pdf' % (model.Name),orientation=fOrient,format='pdf')
     #-----------------------------------------------------------
 
 

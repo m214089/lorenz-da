@@ -34,14 +34,12 @@ def plot_trace(obs=None, ver=None, xb=None, xa=None, N=1, figNum=None):
     pyplot.clf()
     for k in range(0,N):
         pyplot.subplot(N,1,k+1)
-        pyplot.hold(True)
         if ( obs is not None ): pyplot.plot(obs[:,k],'ro',label='observation')
         if ( ver is not None ): pyplot.plot(ver[:,k],'k-',label='truth')
         if ( xb  is not None ): pyplot.plot(xb[:,k], 'c-',label='background')
         if ( xa  is not None ): pyplot.plot(xa[:,k], 'b-',label='analysis')
         pyplot.plot(np.zeros(len(ver[k,:])),'k:')
         pyplot.ylabel('x' + str(k+1),fontweight='bold',fontsize=12)
-        pyplot.hold(False)
         if ( k == 0 ):
             title = 'Time trace'
             pyplot.title(title,fontweight='bold',fontsize=14)
@@ -61,7 +59,6 @@ def plot_abs_error(xbe, xae, label=['x'], N=1, yscale='semilog', figNum=None):
     if ( figNum is None ): fig = pyplot.figure()
     else: fig = pyplot.figure(figNum)
     pyplot.clf()
-    pyplot.hold(True)
     for k in range(0,N):
         pyplot.subplot(N,1,k+1)
         if ( yscale == 'linear' ):
@@ -102,7 +99,6 @@ def plot_rmse(xbrmse=None, xarmse=None, xyrmse=None, yscale='semilog', figNum=No
     else:                  fig = pyplot.figure(figNum)
 
     pyplot.clf()
-    pyplot.hold(True)
     if ( yscale == 'linear' ):
         if ( xbrmse is not None ): pyplot.plot(xbrmse[1:],'b-',label='prior',      linewidth=2, alpha=0.90)
         if ( xarmse is not None ): pyplot.plot(xarmse[:],'r-',label='posterior',  linewidth=2, alpha=0.65)
@@ -132,7 +128,6 @@ def plot_rmse(xbrmse=None, xarmse=None, xyrmse=None, yscale='semilog', figNum=No
     if ( not (pretitle is None) ): title = pretitle + ' - ' + title
     pyplot.title(title,fontweight='bold',fontsize=14)
     pyplot.legend(loc='lower right',ncol=2)
-    pyplot.hold(False)
     fig.canvas.set_window_title(title)
     return fig
 ###############################################################
@@ -147,7 +142,6 @@ def plot_abs_error_var(xbev, xaev, label=['x'], N=1, yscale='semilog', figNum=No
     pyplot.clf()
     for k in range(0,N):
         pyplot.subplot(N,1,k+1)
-        pyplot.hold(True)
         if ( yscale == 'linear'):
             pyplot.plot(xbev[k,2:],'b-',label='background',linewidth=2)
             pyplot.plot(xaev[k,2:],'r-',label='analysis',linewidth=2)
@@ -166,7 +160,6 @@ def plot_abs_error_var(xbev, xaev, label=['x'], N=1, yscale='semilog', figNum=No
             yoffa = 0.2e1 * yl[0]
         pyplot.text(0,yoffb,strb,fontsize=10)
         pyplot.text(0,yoffa,stra,fontsize=10)
-        pyplot.hold(False)
         if ( k == 0 ):
             title = 'Ensemble Kalman Filter Error Variance'
             pyplot.title(title,fontweight='bold',fontsize=14)
@@ -185,7 +178,6 @@ def plot_iteration_stats(itstats, figNum=None, pretitle=None):
     else: fig = pyplot.figure(figNum)
 
     pyplot.clf()
-    pyplot.hold(True)
     pyplot.plot(itstats,'k-',linewidth=2)
 
     yl = pyplot.get(pyplot.gca(),'ylim')
@@ -206,7 +198,6 @@ def plot_iteration_stats(itstats, figNum=None, pretitle=None):
     if ( not (pretitle is None) ): title = pretitle + ' - ' + title
     pyplot.title(title,fontweight='bold',fontsize=14)
     fig.canvas.set_window_title(title)
-    pyplot.hold(False)
     return fig
 ###############################################################
 
@@ -217,7 +208,6 @@ def plot_error_variance_stats(evratio, figNum=None, sStat=100, pretitle=None):
     else: fig = pyplot.figure(figNum)
 
     pyplot.clf()
-    pyplot.hold(True)
 
     pyplot.plot(evratio,'k-',linewidth=2)
     pyplot.plot(np.ones(len(evratio)-1)*0.5,'r:',linewidth=1)
@@ -235,7 +225,6 @@ def plot_error_variance_stats(evratio, figNum=None, sStat=100, pretitle=None):
     if ( not (pretitle is None) ): title = pretitle + ' - ' + title
     pyplot.title(title,fontweight='bold',fontsize=14)
     fig.canvas.set_window_title(title)
-    pyplot.hold(False)
 
     return fig
 ###############################################################
@@ -261,7 +250,6 @@ def plot_ObImpact(dJa, dJe, sOI=None, eOI=None, title=None, xlabel=None, ylabel=
     else:                       inc = 1
 
     fig = pyplot.figure()
-    pyplot.hold(True)
 
     r0 = pyplot.plot(np.zeros(eOI-sOI+1),'k-')
     r1 = pyplot.bar(index,       dJa, width, color=color_adj, edgecolor=color_adj, linewidth=0.0)
@@ -287,7 +275,6 @@ def plot_ObImpact(dJa, dJe, sOI=None, eOI=None, title=None, xlabel=None, ylabel=
     pyplot.title(title,   fontsize=14)
     fig.canvas.set_window_title(title)
 
-    pyplot.hold(False)
 
     return fig
 ###############################################################
@@ -313,14 +300,13 @@ def plot_ObImpact_L96(dJ, N=1, t=0):
     pyplot.clim(-cmax,cmax)
     fig.canvas.set_window_title(t)
 
-    pyplot.hold(False)
 
     return fig
 ###############################################################
 
 ###############################################################
 def save_figure(fhandle, fname='test', orientation='landscape', \
-                pdf=False, pdfdpi=300, eps=True, epsdpi=300, png=True, pngdpi=100, \
+                pdf=True, pdfdpi=300, eps=False, epsdpi=300, png=False, pngdpi=100, \
                 **kwargs):
 # {{{
     '''

@@ -38,11 +38,11 @@ varDA = VarDataAssim()
 Name = 'R76'                      # model name
 Ndof = 3                          # model degrees of freedom
 Par  = [0.2, 0.2, 5.7]            # model parameters F, dF
-dt   = 1.0e-3                     # model time-step
+dt   = 1.0e-5                     # model time-step
 model.init(Name=Name,Ndof=Ndof,Par=Par,dt=dt)
 
 nassim = 200                 # no. of assimilation cycles
-ntimes = 0.25                # do assimilation every ntimes non-dimensional time units
+ntimes = 0.1                 # do assimilation every ntimes non-dimensional time units
 maxouter = 1
 DA.init(nassim=nassim,ntimes=ntimes,maxouter=maxouter)
 
